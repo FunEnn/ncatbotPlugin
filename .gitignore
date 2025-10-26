@@ -4,6 +4,7 @@
 /napcat
 /pdf
 /stock
+/config.yaml
 
 # Python cache files
 __pycache__/

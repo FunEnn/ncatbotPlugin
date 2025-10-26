@@ -3,7 +3,7 @@ import jmcomic
 from ncatbot.plugin_system import NcatBotPlugin
 from ncatbot.plugin_system import command_registry
 from ncatbot.core.event import BaseMessageEvent
-from ncatbot.core import File, MessageChain
+from ncatbot.core import GroupMessage, PrivateMessage
 
 class JmComicPlugin(NcatBotPlugin):
     name = "JmComicPlugin"
@@ -43,9 +43,24 @@ class JmComicPlugin(NcatBotPlugin):
     async def _send_pdf_file(self, event: BaseMessageEvent, pdf_path: str):
         """发送 PDF 文件"""
         try:
-            # 创建文件对象并发送
-            pdf_file = File(pdf_path)
-            message_chain = MessageChain([pdf_file])
-            await event.reply(message_chain)
+            file_name = os.path.basename(pdf_path)
+            
+            if isinstance(event, PrivateMessage):
+                # 私聊消息
+                await self.api.send_private_file(
+                    user_id=event.user_id, 
+                    file=pdf_path, 
+                    name=file_name
+                )
+            elif isinstance(event, GroupMessage):
+                # 群聊消息
+                await self.api.send_group_file(
+                    group_id=event.group_id, 
+                    file=pdf_path, 
+                    name=file_name
+                )
+            else:
+                await event.reply(f"PDF文件已准备就绪: {file_name}")
+                
         except Exception as e:
             await event.reply(f"发送文件失败: {str(e)}")

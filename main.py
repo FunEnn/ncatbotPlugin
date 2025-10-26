@@ -5,7 +5,7 @@ bot = BotClient()
 _log = get_log()
 
 # ========== 菜单功能 ==========
-@bot.group_event()
+@bot.on_group_message()
 async def on_group_message(msg: GroupMessage):
     if msg.raw_message == "/菜单":
         menu_text = """🤖 QQ机器人功能菜单 🤖
@@ -22,7 +22,7 @@ async def on_group_message(msg: GroupMessage):
         
         await msg.reply(text=menu_text)
 
-@bot.private_event()
+@bot.on_private_message()
 async def on_private_message(msg: PrivateMessage):
     if msg.raw_message == "/菜单":
         menu_text = """🤖 QQ机器人功能菜单 🤖
@@ -37,7 +37,7 @@ async def on_private_message(msg: PrivateMessage):
 • 示例: /loli 3 萝莉、/loli 白丝
 """
         
-        await bot.api.post_private_msg(msg.user_id, text=menu_text)
+        await msg.reply(text=menu_text)
 
 # ========== 启动 BotClient==========
 if __name__ == "__main__":
