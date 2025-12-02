@@ -31,28 +31,55 @@
 
 ### 环境要求
 - Python 3.12+
-- NcatBot框架
+- NcatBot 框架
 
 ### 安装步骤
 
-1. **克隆项目**
+#### 1. 克隆项目
 ```bash
 git clone https://github.com/FunEnn/ncatbotPlugin.git
 cd ncatbotPlugin
 ```
 
-2. **安装依赖**
+#### 2. 选择安装方式
+
+**方法一：使用 uv（推荐）**
+
+1. 安装 uv 包管理工具
 ```bash
-pip install -r requirements.txt
+pip install uv
 ```
 
-3. **配置机器人**
+2. 安装依赖
+```bash
+uv venv
+uv pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple --upgrade
+```
+
+---
+
+**方法二：使用传统 pip**
+
+1. 安装依赖
+```bash
+pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple --upgrade
+```
+
+#### 3. 配置机器人
+
 编辑 `main.py` 文件，修改Bot的QQ号：
 ```python
 bot.run(bt_uin="你的机器人QQ号", root="你的QQ号")
 ```
 
-4. **启动机器人**
+#### 4. 启动机器人
+
+如果使用 uv 安装：
+```bash
+uv run python main.py
+```
+
+如果使用 pip 安装：
 ```bash
 python main.py
 ```
