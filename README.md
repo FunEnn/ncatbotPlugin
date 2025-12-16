@@ -5,10 +5,11 @@
 ## 📦 插件列表
 
 ### [JmComicPlugin](./plugins/JmComicPlugin/README.md) 📚
-禁漫本子下载插件，支持通过 `/jm <本子ID>` 命令下载禁漫本子并自动发送PDF文件。
+禁漫本子下载插件，支持通过 `/jm <本子ID>` 命令下载禁漫本子并自动发送PDF文件，并支持通过 `/jmzip <本子ID>` 发送ZIP压缩包。
 
 **主要功能：**
 - 通过 `/jm <本子ID>` 指令下载禁漫本子
+- 通过 `/jmzip <本子ID>` 指令下载禁漫本子并发送 ZIP（失败回退发送 PDF）
 - 自动合成PDF（优先使用官方PDF）
 - 已下载的PDF会直接发送，无需重复下载
 
@@ -91,6 +92,7 @@ python main.py
 
 ### JmComicPlugin命令
 - `/jm <本子ID>` - 下载禁漫本子并发送PDF
+- `/jmzip <本子ID>` - 下载禁漫本子并发送ZIP(失败回退PDF)
 - 示例：`/jm 114514`
 
 ### Lolicon命令

@@ -12,6 +12,7 @@ async def on_group_message(msg: GroupMessage):
         
 📚 禁漫本子下载 (JmComicPlugin)  
 • /jm <本子ID> - 下载禁漫本子并发送PDF
+• /jmzip <本子ID> - 下载禁漫本子并发送ZIP(失败回退PDF)
 • 例如: /jm 114514
 
 🎨 二次元图片 (Lolicon)
@@ -29,6 +30,7 @@ async def on_private_message(msg: PrivateMessage):
 
 📚 禁漫本子下载 (JmComicPlugin)  
 • /jm <本子ID> - 下载禁漫本子并发送PDF
+• /jmzip <本子ID> - 下载禁漫本子并发送ZIP(失败回退PDF)
 • 例如: /jm 114514
 
 🎨 二次元图片 (Lolicon)
