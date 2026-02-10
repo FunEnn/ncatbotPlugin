@@ -130,13 +130,13 @@ class JmComicPlugin(NcatBotPlugin):
             await event.reply(f"文件已准备就绪: {file_name}")
 
     @command_registry.command("query", description="根据关键词搜索禁漫本子")
-    async def jm_query_cmd(self, event: BaseMessageEvent, search_query: str):
+    async def jm_query_cmd(self, event: BaseMessageEvent, search_query: str, amount: int = 20):
         """搜索禁漫本子命令"""
         try:
             if not search_query:
                 await event.reply("请提供搜索关键词，例如: /query MANA 无修正 或 /query 427413")
                 return
-
+            
             # 创建JmClient实例
             client = self.jm_option.new_jm_client()
             
@@ -149,44 +149,51 @@ class JmComicPlugin(NcatBotPlugin):
                 await event.reply(f"未找到与 '{search_query}' 相关的本子")
                 return
             
-            # 只显示前5个结果（因为要下载封面）
-            results = []
+            # 构建搜索结果消息
+            result_msg = f"搜索结果 (共{page.total}个本子，当前第1页):\n\n"
+            
+            # 只显示前10个结果
             count = 0
+
             for album_id, title in page:
-                if count >= 5:
+                if count >= amount:
                     break
-                results.append((album_id, title))
+                result_msg += f"[{album_id}]: {title}\n"
                 count += 1
             
-            # 下载封面并准备消息
-            message_chains = []
+            if page.total > amount:
+                result_msg += f"\n... 还有 {page.total - amount} 个结果未显示"
             
-            # 添加总结果信息
-            message_chains.append(Image(""))  # 占位符，后面会替换
-            message_chains.append(f"搜索结果 (共{page.total}个本子，当前第1页):\n\n")
+            await event.reply(result_msg)
             
-            for album_id, title in results:
-                # 下载封面
-                cover_path = os.path.join(self.cover_dir, f"{album_id}.jpg")
-                try:
-                    client.download_album_cover(album_id, cover_path)
-                    
-                    # 添加封面和信息到消息链
-                    message_chains.append(Image(cover_path))
-                    message_chains.append(f"[{album_id}]: {title}\n")
-                except Exception as e:
-                    # 如果下载封面失败，只添加文本信息
-                    message_chains.append(f"[{album_id}]: {title} (封面下载失败)\n")
+        except Exception as e:
+            await event.reply(f"搜索过程中发生错误: {str(e)}")
+    
+    @command_registry.command("cover", description="获取指定本子的封面图片")
+    async def jm_cover_cmd(self, event: BaseMessageEvent, album_id: str):
+        """获取指定album_id的封面图片命令"""
+        try:
+            if not album_id or not album_id.isdigit():
+                await event.reply("请提供有效的本子ID，例如: /cover 427413")
+                return
+
+            # 创建JmClient实例
+            client = self.jm_option.new_jm_client()
             
-            if page.total > 5:
-                message_chains.append(f"\n... 还有 {page.total - 5} 个结果未显示")
+            await event.reply(f"正在获取本子 {album_id} 的封面图片，请稍候...")
             
-            # 移除第一个占位符
-            if message_chains and isinstance(message_chains[0], Image):
-                message_chains.pop(0)
-            
-            # 发送消息
-            await event.reply(MessageChain(message_chains))
+            # 下载封面
+            cover_path = os.path.join(self.cover_dir, f"{album_id}.jpg")
+            try:
+                client.download_album_cover(album_id, cover_path)
+                
+                # 发送封面图片
+                await event.reply(MessageChain([Image(cover_path)]))
+            except Exception as e:
+                await event.reply(f"获取封面失败: {str(e)}")
+                
+        except Exception as e:
+            await event.reply(f"执行过程中发生错误: {str(e)}")
             
         except Exception as e:
             await event.reply(f"搜索过程中发生错误: {str(e)}")
