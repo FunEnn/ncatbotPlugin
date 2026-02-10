@@ -123,3 +123,44 @@ class JmComicPlugin(NcatBotPlugin):
             )
         else:
             await event.reply(f"文件已准备就绪: {file_name}")
+
+    @command_registry.command("query", description="根据关键词搜索禁漫本子")
+    async def jm_query_cmd(self, event: BaseMessageEvent, search_query: str):
+        print('test########')
+
+        """搜索禁漫本子命令"""
+        try:
+            if not search_query:
+                await event.reply("请提供搜索关键词，例如: /query MANA 无修正 或 /query 427413")
+                return
+            
+            # 创建JmClient实例
+            client = self.jm_option.new_jm_client()
+            
+            await event.reply(f"正在搜索关键词: {search_query}，请稍候...")
+            
+            # 搜索漫画
+            page = client.search_site(search_query=search_query, page=1)
+            
+            if page.total == 0:
+                await event.reply(f"未找到与 '{search_query}' 相关的本子")
+                return
+            
+            # 构建搜索结果消息
+            result_msg = f"搜索结果 (共{page.total}个本子，当前第1页):\n\n"
+            
+            # 只显示前10个结果
+            count = 0
+            for album_id, title in page:
+                if count >= 10:
+                    break
+                result_msg += f"[{album_id}]: {title}\n"
+                count += 1
+            
+            if page.total > 10:
+                result_msg += f"\n... 还有 {page.total - 10} 个结果未显示"
+            
+            await event.reply(result_msg)
+            
+        except Exception as e:
+            await event.reply(f"搜索过程中发生错误: {str(e)}")
