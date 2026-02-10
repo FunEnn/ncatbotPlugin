@@ -37,6 +37,7 @@ async def on_private_message(msg: PrivateMessage):
 • /loli [数量] [标签] - 发送随机二次元图片
 • /r18 [数量] [标签] - 发送R18图片(私聊可用)
 • 示例: /loli 3 萝莉、/loli 白丝
+
 """
         
         await msg.reply(text=menu_text)
