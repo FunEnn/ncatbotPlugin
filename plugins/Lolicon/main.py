@@ -13,7 +13,7 @@ import hashlib
 import time
 from typing import List, Dict, Optional
 
-LOG = get_log("Lolicon")
+log = get_log("Lolicon")
 
 class Lolicon(NcatBotPlugin):
     name = "Lolicon"
@@ -34,7 +34,7 @@ class Lolicon(NcatBotPlugin):
                 with open(self.cache_index_file, 'r', encoding='utf-8') as f:
                     return json.load(f)
             except Exception as e:
-                LOG.error(f"加载缓存索引失败: {e}")
+                log.error(f"加载缓存索引失败: {e}")
         return {}
     
     def _save_cache_index(self):
@@ -42,7 +42,7 @@ class Lolicon(NcatBotPlugin):
             with open(self.cache_index_file, 'w', encoding='utf-8') as f:
                 json.dump(self.cache_index, f, ensure_ascii=False, indent=2)
         except Exception as e:
-            LOG.error(f"保存缓存索引失败: {e}")
+            log.error(f"保存缓存索引失败: {e}")
     
     def _get_cache_path(self, url: str) -> Path:
         url_hash = hashlib.md5(url.encode()).hexdigest()
@@ -72,9 +72,9 @@ class Lolicon(NcatBotPlugin):
                             self._save_cache_index()
                             return cache_path
                     else:
-                        LOG.warning(f"下载图片失败: {url}, 状态码: {response.status}")
+                        log.warning(f"下载图片失败: {url}, 状态码: {response.status}")
         except Exception as e:
-            LOG.error(f"下载图片异常: {url}, 错误: {e}")
+            log.error(f"下载图片异常: {url}, 错误: {e}")
         
         return None
     
@@ -115,17 +115,17 @@ class Lolicon(NcatBotPlugin):
                             images_data = data.get("data", [])
                             return images_data[:count]
                         else:
-                            LOG.error(f"API 返回错误: {data.get('error')}")
+                            log.error(f"API 返回错误: {data.get('error')}")
                     else:
-                        LOG.error(f"API 请求失败: {response.status}")
+                        log.error(f"API 请求失败: {response.status}")
         except Exception as e:
-            LOG.error(f"调用 API 异常: {e}")
+            log.error(f"调用 API 异常: {e}")
         
         return []
     
     async def on_load(self):
         # 可留空，保持轻量
-        print(f"{self.name} 插件已加载")
+        log.info(f"{self.name} 插件已加载")
     
     @command_registry.command("loli", aliases=["萝莉"], description="发送随机二次元图片")
     @param(name="count", default=1, help="图片数量 (1-10)")
@@ -194,7 +194,7 @@ class Lolicon(NcatBotPlugin):
             
             await event.reply("缓存清理完成")
         except Exception as e:
-            LOG.error(f"清理缓存失败: {e}")
+            log.error(f"清理缓存失败: {e}")
             await event.reply(f"清理缓存失败: {e}")
     
     async def _check_api_status(self) -> str:
@@ -239,7 +239,7 @@ class Lolicon(NcatBotPlugin):
         
         for i, cache_path in enumerate(cache_paths):
             if isinstance(cache_path, Exception):
-                LOG.error(f"下载图片异常: {cache_path}")
+                log.error(f"下载图片异常: {cache_path}")
                 failed_count += 1
                 continue
                 
@@ -262,7 +262,7 @@ class Lolicon(NcatBotPlugin):
                 await event.reply(MessageChain(batch))
                 total_sent += len(batch)
             except Exception as e:
-                LOG.error(f"发送图片失败: {e}")
+                log.error(f"发送图片失败: {e}")
             
             if i + batch_size < len(msg_chains):
                 await asyncio.sleep(0.2)
