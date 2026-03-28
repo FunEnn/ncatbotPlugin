@@ -2,16 +2,16 @@ import os
 import zipfile
 
 import jmcomic
-from ncatbot.plugin_system import NcatBotPlugin
-from ncatbot.plugin_system import command_registry
-from ncatbot.core.event import BaseMessageEvent
-from ncatbot.core import GroupMessage, PrivateMessage
+from ncatbot.plugin import NcatBotPlugin
+from ncatbot.core import registrar
+from ncatbot.event.qq import MessageEvent
+from ncatbot.event.qq import GroupMessageEvent, PrivateMessageEvent
 
 class JmComicPlugin(NcatBotPlugin):
     name = "JmComicPlugin"
     version = "0.0.1"
     author = "FunEnn"
-    description = "禁漫本子下载插件，支持通过/jm命令下载本子并发送PDF文件"
+
 
     async def on_load(self):
         # 获取项目根目录
@@ -29,7 +29,7 @@ class JmComicPlugin(NcatBotPlugin):
     def _zip_path(self, album_id: str) -> str:
         return os.path.join(self.base_dir, f"{album_id}.zip")
 
-    async def _ensure_pdf(self, event: BaseMessageEvent, album_id: str) -> str | None:
+    async def _ensure_pdf(self, event: MessageEvent, album_id: str) -> str | None:
         pdf_path = self._pdf_path(album_id)
 
         if os.path.exists(pdf_path):
@@ -48,17 +48,17 @@ class JmComicPlugin(NcatBotPlugin):
         pdf_name_in_zip = os.path.basename(pdf_path)
 
         with zipfile.ZipFile(
-            zip_path,
-            mode="w",
-            compression=zipfile.ZIP_DEFLATED,
-            compresslevel=9,
+                zip_path,
+                mode="w",
+                compression=zipfile.ZIP_DEFLATED,
+                compresslevel=9,
         ) as zf:
             zf.write(pdf_path, arcname=pdf_name_in_zip)
 
         return zip_path
 
-    @command_registry.command("jm", description="下载禁漫本子并发送PDF文件")
-    async def jm_download_cmd(self, event: BaseMessageEvent, album_id: str):
+    @registrar.on_command("/jm", description="下载禁漫本子并发送PDF文件")
+    async def jm_download_cmd(self, event: MessageEvent, album_id: str):
         """下载禁漫本子命令"""
         try:
             if not album_id.isdigit():
@@ -74,8 +74,8 @@ class JmComicPlugin(NcatBotPlugin):
         except Exception as e:
             await event.reply(f"下载过程中发生错误: {str(e)}")
 
-    @command_registry.command("jmzip", description="下载禁漫本子并发送ZIP压缩包（失败则回退发送PDF）")
-    async def jmzip_download_cmd(self, event: BaseMessageEvent, album_id: str):
+    @registrar.on_command("/jmzip", description="下载禁漫本子并发送ZIP压缩包（失败则回退发送PDF）")
+    async def jmzip_download_cmd(self, event: MessageEvent, album_id: str):
         """下载禁漫本子并发送 ZIP"""
         try:
             if not album_id.isdigit():
@@ -90,7 +90,7 @@ class JmComicPlugin(NcatBotPlugin):
                     await event.reply("未找到 PDF 文件，可能下载失败。")
                     return
 
-                await event.reply("开始打包本子 {album_id} ，请稍候...")
+                await event.reply(f"开始打包本子 {album_id} ，请稍候...")
                 zip_path = self._build_zip_from_pdf(album_id, pdf_path)
 
             try:
@@ -105,18 +105,18 @@ class JmComicPlugin(NcatBotPlugin):
         except Exception as e:
             await event.reply(f"jmzip 执行过程中发生错误: {str(e)}")
 
-    async def _send_file(self, event: BaseMessageEvent, file_path: str):
+    async def _send_file(self, event: MessageEvent, file_path: str):
         """发送文件（PDF/ZIP）"""
         file_name = os.path.basename(file_path)
 
-        if isinstance(event, PrivateMessage):
-            await self.api.send_private_file(
+        if isinstance(event, PrivateMessageEvent):
+            await self.api.qq.send_private_file(
                 user_id=event.user_id,
                 file=file_path,
                 name=file_name,
             )
-        elif isinstance(event, GroupMessage):
-            await self.api.send_group_file(
+        elif isinstance(event, GroupMessageEvent):
+            await self.api.qq.send_group_file(
                 group_id=event.group_id,
                 file=file_path,
                 name=file_name,

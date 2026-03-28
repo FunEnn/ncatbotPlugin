@@ -1,0 +1,9 @@
+name = "JmComicPlugin"
+version = "0.1.0"
+main = "main.py"
+author = "FunEnn"
+description = "NcatBot 模板插件 — 发送 hello 回复 hi"
+entry_class = "JmComicPlugin"
+pip_dependencies = []
+
+[dependencies]
