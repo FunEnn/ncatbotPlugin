@@ -1,0 +1,9 @@
+name = "BilibiliParser"
+version = "1.0.0"
+main = "plugin.py"
+author = "Migrated"
+description = "B站视频解析与下载插件"
+entry_class = "BilibiliParser"
+pip_dependencies = ["aiohttp", "requests", "qrcode", "cryptography"]
+
+[dependencies]

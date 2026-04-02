@@ -11,6 +11,8 @@
 | [MenuPlugin](./plugins/menu_plugin/) | 功能菜单 | `/菜单` |
 | [JmComicPlugin](./plugins/JmComicPlugin/README.md) | 禁漫本子下载 | `/jm <ID>`、`/jmzip <ID>` |
 | [Lolicon](./plugins/Lolicon/README.md) | 二次元图片 | `/loli [数量] [标签]`、`/r18 [数量] [标签]` |
+| [BilibiliParser](./plugins/BilibiliParser/README.md) | B站视频解析 | `/bparser_login`、自动解析链接 |
+
 
 ### JmComicPlugin 📚
 
@@ -31,6 +33,18 @@
 - ⚡ 并发下载与分批发送
 
 [📖 查看详细文档](./plugins/Lolicon/README.md)
+
+### BilibiliParser 📺
+
+B站视频链接解析与下载插件，支持 BV/av 号、短链及小程序卡片。
+
+- 🔗 **多格式解析**：自动识别 BV号、av号、b23.tv 短链。
+- 📊 **信息摘要**：展示标题、简介、封面及各项统计数据。
+- 🎥 **自动发视频**：群聊中自动下载并发送视频文件（需登录）。
+- 🔐 **扫码登录**：支持 `/bparser_login` 获取登录态，持久化加密存储。
+
+[📖 查看详细文档](./plugins/BilibiliParser/README.md)
+
 
 ## 🛠️ 安装与配置
 
@@ -108,9 +122,13 @@ ncatbotPlugin/
 │   │   ├── manifest.toml
 │   │   ├── plugin.py
 │   │   └── option.yml
-│   └── Lolicon/             # 二次元图片插件
+│   ├── Lolicon/             # 二次元图片插件
+│   │   ├── manifest.toml
+│   │   └── plugin.py
+│   └── BilibiliParser/      # B站解析插件
 │       ├── manifest.toml
-│       └── plugin.py
+│       ├── plugin.py
+│       └── db/              # 加密 Cookie 存储
 └── requirements.txt
 ```
 
@@ -123,6 +141,8 @@ ncatbotPlugin/
 | `/jmzip <本子ID>` | 下载并发送 ZIP | 群聊 / 私聊 |
 | `/loli [数量] [标签]` | 随机二次元图片 | 群聊 / 私聊 |
 | `/r18 [数量] [标签]` | R18 图片 | **仅私聊** |
+| `/bparser_login` | B站扫码登录 | 群聊 / 私聊 |
+
 
 ## 📝 注意事项
 

@@ -1,6 +1,11 @@
 # Plugin dependencies
 # Fixed versions based on current installation
 aiohttp
+
+requests
+cryptography
+
 jmcomic
 img2pdf
+
 ncatbot5

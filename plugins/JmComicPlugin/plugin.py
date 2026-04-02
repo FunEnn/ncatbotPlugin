@@ -12,7 +12,7 @@ from ncatbot.event.qq import MessageEvent, GroupMessageEvent, PrivateMessageEven
 
 class JmComicPlugin(NcatBotPlugin):
     name = "JmComicPlugin"
-    version = "0.1.0"
+    version = "1.0.0"
 
     async def on_load(self):
         # 获取项目根目录
