@@ -1,51 +1,55 @@
 # JmComicPlugin
 
-## 简介
-JmComicPlugin 是一个用于 QQ 机器人（NcatBot 框架）的禁漫本子下载插件，支持通过 `/jm <本子ID>` 命令下载禁漫本子并自动发送 PDF 文件，同时支持通过 `/jmzip <本子ID>` 发送 ZIP 压缩包（失败回退发送 PDF）。
+禁漫本子下载插件，支持通过命令下载本子并自动发送 PDF / ZIP 文件。
 
-## 主要功能
-- 通过 `/jm <本子ID>` 指令下载禁漫本子
-- 通过 `/jmzip <本子ID>` 指令下载禁漫本子并发送 ZIP（失败回退发送 PDF）
-- 自动合成 PDF（优先使用官方 PDF）
-- 已下载的 PDF 会直接发送，无需重复下载
+> **框架要求**：ncatbot5 v5.3.4+
 
-## 安装依赖
-在插件目录 `plugins/JmComicPlugin` 下运行：
+## ✨ 功能特性
 
-```bash
-pip install -r requirements.txt
+- 📥 通过 `/jm <本子ID>` 下载并发送 PDF
+- 📦 通过 `/jmzip <本子ID>` 下载并发送 ZIP（失败自动回退 PDF）
+- 💾 已下载的文件自动缓存，无需重复下载
+- 📤 支持群聊和私聊发送文件
+
+## 📁 文件结构
+
+```
+JmComicPlugin/
+├── manifest.toml      # 插件元数据
+├── plugin.py           # 插件主逻辑（入口类 JmComicPlugin）
+├── option.yml          # jmcomic 下载配置
+└── requirements.txt
 ```
 
-依赖列表：
-- jmcomic
-- img2pdf
+## 📋 命令列表
 
-## 使用方法
-1. 启动 QQ 机器人（NcatBot 框架）。
-2. 在群聊或私聊中发送：
-   ```
-   /jm <本子ID>
-   ```
-   例如：`/jm 114514`
-3. 如果你希望发送 ZIP 压缩包，在群聊或私聊中发送：
-   ```
-   /jmzip <本子ID>
-   ```
-   例如：`/jmzip 114514`
-3. 插件会自动下载本子并发送 PDF 文件。
-   - 若 PDF 已存在，则直接发送，无需重复下载。
+| 命令 | 说明 | 示例 |
+| :--- | :--- | :--- |
+| `/jm <本子ID>` | 下载并发送 PDF 文件 | `/jm 422866` |
+| `/jmzip <本子ID>` | 下载并发送 ZIP（失败回退 PDF） | `/jmzip 422866` |
 
-## 常见问题
-- **未找到 PDF 或图片？**
-  请检查 `option.yml` 的 `base_dir` 路径与实际下载目录是否一致。
-- **下载失败或网络问题？**
-  检查网络环境，或尝试更换禁漫源域名。
+- 本子 ID 必须是纯数字
+- 群聊中通过群文件发送，私聊中通过私聊文件发送
 
-## 支持
-如有问题请提交 issue
+## ⚙️ 配置
 
-## 鸣谢
+下载配置位于 `option.yml`，可调整：
 
-- 本插件基于 [JMComic-Crawler-Python](https://github.com/hect0x7/JMComic-Crawler-Python) 项目开发
-- 感谢 [NcatBot](https://github.com/liyihao1110/NcatBot)
+- 下载源域名
+- 图片质量
+- 下载路径
 
+PDF 输出目录为项目根目录下的 `pdf/` 文件夹。
+
+## ❓ 常见问题
+
+| 问题 | 解决方案 |
+| :--- | :--- |
+| 未找到 PDF | 检查 `option.yml` 的下载路径配置是否正确 |
+| 下载失败 | 检查网络环境，或尝试更换 `option.yml` 中的源域名 |
+| 文件发送失败 | 确认机器人在群中有上传文件权限 |
+
+## 🙏 鸣谢
+
+- [JMComic-Crawler-Python](https://github.com/hect0x7/JMComic-Crawler-Python) — 禁漫爬虫核心
+- [NcatBot](https://github.com/ncatbot/NcatBot) — 机器人框架

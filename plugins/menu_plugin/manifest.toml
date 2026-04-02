@@ -1,0 +1,9 @@
+name = "menu_plugin"
+version = "1.0.0"
+main = "plugin.py"
+author = "FunEnn"
+description = "提供 QQ 机器人功能菜单"
+entry_class = "MenuPlugin"
+pip_dependencies = []
+
+[dependencies]

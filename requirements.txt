@@ -3,4 +3,4 @@
 aiohttp
 jmcomic
 img2pdf
-ncatbot
+ncatbot5

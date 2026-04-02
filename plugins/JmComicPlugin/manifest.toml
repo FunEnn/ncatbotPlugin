@@ -1,9 +1,10 @@
 name = "JmComicPlugin"
 version = "0.1.0"
-main = "main.py"
+main = "plugin.py"
 author = "FunEnn"
-description = "NcatBot 模板插件 — 发送 hello 回复 hi"
+description = "下载禁漫本子并发送 PDF/ZIP 文件"
 entry_class = "JmComicPlugin"
-pip_dependencies = []
+pip_dependencies = ["jmcomic", "img2pdf"]
 
 [dependencies]
+
