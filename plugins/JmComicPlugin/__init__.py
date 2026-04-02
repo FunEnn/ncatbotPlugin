@@ -1,4 +1,4 @@
 # __init__.py
-from .main import JmComicPlugin
+from .plugin import JmComicPlugin
 
 __all__ = ["JmComicPlugin"]

@@ -1,3 +1,3 @@
-from .main import Lolicon
+from .plugin import LoliconPlugin
 
-__all__ = ["Lolicon"]
+__all__ = ["LoliconPlugin"]
