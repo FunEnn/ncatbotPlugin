@@ -37,7 +37,7 @@
 ### 环境要求
 
 - Python 3.12+
-- ncatbot5（`pip install ncatbot5`）
+- ncatbot5（`pip install -r requirements.txt`）
 
 ### 安装步骤
 
@@ -55,18 +55,24 @@ cd ncatbotPlugin
 ```bash
 pip install uv
 uv venv
-uv pip install ncatbot5 -i https://mirrors.aliyun.com/pypi/simple
+uv pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple
 ```
 
 **方法二：使用 pip**
 
 ```bash
-pip install ncatbot5 -i https://mirrors.aliyun.com/pypi/simple
+pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple
 ```
 
-> 插件依赖（如 `jmcomic`、`aiohttp`）会在首次启动时由框架根据 `manifest.toml` 中的 `pip_dependencies` 自动安装。
-
 #### 3. 初始化配置
+
+**使用 uv（推荐）**
+
+```bash
+uv run ncatbot init
+```
+
+**使用 pip**
 
 ```bash
 ncatbot init
@@ -75,6 +81,14 @@ ncatbot init
 按照提示输入机器人 QQ 号和管理员 QQ 号，框架会自动生成 `config.yaml` 配置文件。
 
 #### 4. 启动机器人
+
+**使用 uv（推荐）**
+
+```bash
+uv run ncatbot run
+```
+
+**使用 pip**
 
 ```bash
 ncatbot run

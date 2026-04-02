@@ -162,8 +162,8 @@ class LoliconPlugin(NcatBotPlugin):
         await event.reply(text="正在获取图片，请稍候...")
         cache_paths = await self._download_images_concurrent(urls)
 
-        # 使用 MessageArray + Image(file=...) 构造消息
-        segments = []
+        # 过滤有效的图片路径
+        valid_paths = []
         failed_count = 0
         for path in cache_paths:
             if isinstance(path, Exception):
@@ -171,28 +171,69 @@ class LoliconPlugin(NcatBotPlugin):
                 failed_count += 1
                 continue
             if path and isinstance(path, Path) and path.exists():
-                segments.append(Image(file=str(path.absolute())))
+                valid_paths.append(path)
             else:
                 failed_count += 1
 
-        if not segments:
+        if not valid_paths:
             await event.reply(text="所有图片下载失败，请稍后重试")
             return
 
         # 分批发送，每批最多 5 张
-        batch_size = min(5, len(segments))
+        batch_size = min(5, len(valid_paths))
         total_sent = 0
 
-        for i in range(0, len(segments), batch_size):
-            batch = segments[i : i + batch_size]
+        for i in range(0, len(valid_paths), batch_size):
+            batch = valid_paths[i : i + batch_size]
+            
+            # 构造 MessageArray
+            msg_array = MessageArray()
+            for path in batch:
+                # ncatbot5 内部可能会自动处理协议前缀，这里直接传本地绝对路径
+                msg_array.add_image(str(path.absolute()))
+                
             try:
-                await event.reply(rtf=MessageArray(*batch))
+                # 使用用户提供的 API 方法发送
+                if isinstance(event, GroupMessageEvent):
+                    await self.api.qq.post_group_array_msg(group_id=event.group_id, msg=msg_array)
+                elif isinstance(event, PrivateMessageEvent):
+                    await self.api.qq.post_private_array_msg(user_id=event.user_id, msg=msg_array)
+                else:
+                    # 回退到 reply
+                    await event.reply(rtf=msg_array)
+                    
                 total_sent += len(batch)
             except Exception as e:
                 self.logger.error(f"发送图片失败: {e}")
 
-            if i + batch_size < len(segments):
-                await asyncio.sleep(0.2)
+            if i + batch_size < len(valid_paths):
+                await asyncio.sleep(0.5)
 
         if failed_count > 0:
             await event.reply(text=f"发送完成！成功: {total_sent}张，失败: {failed_count}张")
+
+    @registrar.qq.on_command("/清理缓存", "/loli_clear", ignore_case=True)
+    async def clear_cache_cmd(self, event: MessageEvent):
+        """清理图片缓存命令"""
+        await event.reply(text="正在清理清理缓存，请稍候...")
+        try:
+            count = 0
+            total_size_bytes = 0
+            
+            # 遍历并删除缓存目录下的所有文件
+            for file in self.cache_dir.iterdir():
+                if file.is_file():
+                    total_size_bytes += file.stat().st_size
+                    file.unlink()
+                    count += 1
+            
+            # 清空索引
+            self.cache_index = {}
+            self._save_cache_index()
+            
+            size_mb = total_size_bytes / (1024 * 1024)
+            await event.reply(text=f"✅ 清理完成！\n删除了 {count} 个缓存文件，共释放 {size_mb:.2f} MB 空间。")
+            self.logger.info(f"清理了 {count} 个缓存文件，共释放 {size_mb:.2f} MB")
+        except Exception as e:
+            self.logger.error(f"清理缓存失败: {e}")
+            await event.reply(text=f"❌ 清理缓存失败: {e}")
